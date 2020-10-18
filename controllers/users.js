@@ -2,14 +2,13 @@ const readFile = require('../utils/read-file.js');
 const path = require('path');
 const jsonDataPathToUsers = path.join(__dirname, '..', 'data', 'users.json');
 
-const getUsers = (req, res, next) => {
+const getUsers = (req, res) => {
   readFile(jsonDataPathToUsers)
     .then(data => res.send(data))
     .catch(err => res.status(500).send(err));
-  next()
 }
 
-const getUser = (req, res, next) => {
+const getUser = (req, res) => {
   const { id } = req.params;
   readFile(jsonDataPathToUsers)
     .then(data => {
@@ -23,7 +22,6 @@ const getUser = (req, res, next) => {
       res.send(user);
     })
     .catch(err => res.status(500).send(err))
-  next()
 }
 
 module.exports = {
