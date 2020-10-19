@@ -1,16 +1,16 @@
 {
   "name": "express_mesto",
   "version": "1.0.0",
-  "description": "",
+  "description": "project on express",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint  **/*.js",
+    "lint": "eslint **/*.js",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "German Shteyn",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^7.11.0",

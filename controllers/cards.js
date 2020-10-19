@@ -7,7 +7,10 @@ const getCards = (req, res) => {
     .then(data => {
       res.send(data)
     })
-    .catch(err => res.status(500).send(err));
+    .catch(err => {
+      console.log('err= ', err.message)
+      res.status(500).send({message: 'Ошибка на сервере'})
+    });
 }
 
 module.exports = getCards;
