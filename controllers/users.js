@@ -49,8 +49,40 @@ const getUser = async (req, res) => {
     }
 };
 
+  const updateProfile = async (req, res) => {
+    try {
+      const {name, about, avatar} = req.body;
+      const id = req.user._id
+      const data = await User.findByIdAndUpdate(id, {name, about, avatar}, {new: true})
+      if (data) {
+        res.status(200).send(data);
+      } else {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+      }
+    } catch (err) {
+      res.status(500).send({ message: 'Что-то пошло не так' });
+    }
+  }
+
+  const updateAvatarProfile = async (req, res) => {
+    try {
+      const { avatar } = req.body;
+      const id = req.user._id
+      const data = await User.findByIdAndUpdate(id, { avatar }, {new: true})
+      if (data) {
+        res.status(200).send(data);
+      } else {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+      }
+    } catch (err) {
+      res.status(500).send({ message: 'Что-то пошло не так' });
+    }
+  }
+
 module.exports = {
   getUsers,
   getUser,
   createProfile,
+  updateProfile,
+  updateAvatarProfile,
 };

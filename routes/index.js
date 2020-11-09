@@ -7,7 +7,7 @@ const errorsRoutes = require('./errors.js');
 //временная авторизация
 routers.use((req, res, next) => {
   req.user = {
-    _id: '5f96c454cc867f18e45ecb91',
+    _id: '5fa80bd8437c8706be394eb8',
   };
 
   next();

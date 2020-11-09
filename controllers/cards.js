@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const req = require("express");
 
 const getCards = async (req, res) => {
   try {
@@ -15,9 +16,7 @@ const getCards = async (req, res) => {
 };
 
 const getCard = async (req, res) => {
-  console.log(req.params);
   const { id } = req.params;
-  console.log(id)
   try {
     const queryCard = await Card.findById(id);
     if (!queryCard) {
@@ -64,9 +63,47 @@ const deleteCard = async (req, res) => {
     }
 }
 
+  const likeCard = async (req, res) => {
+  try {
+    const { cardId } = req.params;
+    const card = await Card.findByIdAndUpdate(
+      cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
+    );
+      if (card) {
+        res.status(200).send(card);
+      } else {
+        res.status(404).send({ message: 'Нет карточки с таким id' });
+      }
+    } catch (err) {
+      res.status(500).send({ message: 'Что-то пошло не так' });
+    }
+  }
+
+const dislikeCard = async (req, res) => {
+  try {
+    const { cardId } = req.params;
+    const card = await Card.findByIdAndUpdate(
+      cardId,
+      { $pull: { likes: req.user._id } },
+      { new: true },
+    );
+    if (card) {
+      res.status(200).send(card);
+    } else {
+      res.status(404).send({ message: 'Нет карточки с таким id' });
+    }
+  } catch (err) {
+    res.status(500).send({ message: 'Что-то пошло не так' });
+  }
+}
+
 module.exports = {
   getCards,
   getCard,
   createCard,
   deleteCard,
+  likeCard,
+  dislikeCard,
 };
