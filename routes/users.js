@@ -9,8 +9,8 @@ const {
 
 router.get('/users', getUsers);
 router.get('/users/:id', getUser);
-router.post('/users/create', createProfile);
-router.patch('/users/:id/me', updateProfile);
-router.patch('/users/:id/me/avatar', updateAvatarProfile)
+router.post('/users', createProfile);
+router.patch('/users/me', updateProfile);
+router.patch('/users/me/avatar', updateAvatarProfile);
 
 module.exports = router;

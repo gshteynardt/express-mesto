@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const ObjectId = require("mongoose");
-const Schema = require("mongoose");
+const Schema = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,12 +11,12 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     validate: {
-      validator: function(v) {
+      validator(v) {
         return /^https?:\/\/(www\.)?[\w-.~:\/?#\[\]@!$&'()*+,;=]+#?$/gi.test(v);
       },
-      message: props => `${props.value} is not a valid avatar url!`
+      message: (props) => `${props.value} is not a valid avatar url!`,
     },
-    required: [true, 'User avatar url required']
+    required: [true, 'User avatar url required'],
   },
   owner: {
     type: Schema.Types.ObjectId,
@@ -32,7 +31,7 @@ const cardSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-  }
+  },
 });
 
 module.exports = mongoose.model('card', cardSchema);
