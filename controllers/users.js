@@ -5,7 +5,7 @@ const getUsers = async (req, res) => {
     const data = await User.find({});
     return res.send(data);
   } catch (err) {
-    if (err.message === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Ошибка на сервере' });
     } else {
       res.status(500).send({ message: 'Что-то пошло не так' });
@@ -18,10 +18,9 @@ const getUser = async (req, res) => {
   const { id } = req.params;
   try {
     const queryUser = await User.findById(id).orFail(new Error('NotFound'));
-
-    return res.send(queryUser);
+    res.status(200).send(queryUser);
   } catch (err) {
-    if (err.message === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Переданы некорректные данные' });
     } if (err.message === 'NotFound') {
       res.status(404).send({ message: 'Объект не найден' });
@@ -41,7 +40,7 @@ const createProfile = async (req, res) => {
     });
     return res.status(200).send(savedUser);
   } catch (err) {
-    if (err.message === 'ValidationError') {
+    if (err.name === 'ValidationError') {
       res.status(400).send({ message: 'Произошла ошибка' });
     } else {
       res.status(500).send({ message: 'Что-то пошло не так' });
@@ -59,7 +58,7 @@ const updateProfile = async (req, res) => {
     const data = await User.findByIdAndUpdate(id, { name, about, avatar }, opts).orFail(new Error('NotFound'));
     return res.status(200).send(data);
   } catch (err) {
-    if (err.message === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Переданы некорректные данные' });
     } else if (err.message === 'NotFound') {
       res.status(404).send({ message: 'Объект не найден' });
@@ -78,7 +77,7 @@ const updateAvatarProfile = async (req, res) => {
 
     return res.status(200).send(data);
   } catch (err) {
-    if (err.message === 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: 'Переданы некорректные данные' });
     } else if (err.message === 'NotFound') {
       res.status(404).send({ message: 'Объект не найден' });
