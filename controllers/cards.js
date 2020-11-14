@@ -7,28 +7,26 @@ const getCards = async (req, res) => {
     res.send(data);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Ошибка на сервере' });
-    } else {
-      res.status(500).send({ message: 'Что-то пошло не так' });
+      return res.status(400).send({ message: 'Ошибка на сервере' });
     }
+    res.status(500).send({ message: 'Что-то пошло не так' });
   }
   return null;
 };
 
 const getCard = async (req, res) => {
-  const { _id } = req.params;
+  const { id } = req.params;
   try {
-    const queryCard = await Card.findById(_id).orFail(new Error('NotFound'));
+    const queryCard = await Card.findById(id).orFail(new Error('NotFound'));
 
-    return res.send(queryCard);
+    res.send(queryCard);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
-    } else if (err.message === 'NotFound') {
-      res.status(404).send({ message: 'Объект не найден' });
-    } else {
-      res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(400).send({ message: 'Переданы некорректные данные' });
+    } if (err.message === 'NotFound') {
+      return res.status(404).send({ message: 'Объект не найден' });
     }
+    res.status(500).send({ message: 'Ошибка сервера' });
   }
   return null;
 };
@@ -57,8 +55,8 @@ const deleteCard = async (req, res) => {
     res.send({ data: deletedCard });
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
-    } else if (err.message === 'NotFound') {
+      return res.status(400).send({ message: 'Переданы некорректные данные' });
+    } if (err.message === 'NotFound') {
       res.status(404).send({ message: 'Объект не найден' });
     } else {
       res.status(500).send({ message: 'Ошибка сервера' });
@@ -79,7 +77,7 @@ const likeCard = async (req, res) => {
     res.status(200).send(card);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      return res.status(400).send({ message: 'Переданы некорректные данные' });
     } if (err.message === 'NotFound') {
       res.status(404).send({ message: 'Объект не найден' });
     } else {
@@ -101,7 +99,7 @@ const dislikeCard = async (req, res) => {
     res.status(200).send(card);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      return res.status(400).send({ message: 'Переданы некорректные данные' });
     } if (err.message === 'NotFound') {
       res.status(404).send({ message: 'Объект не найден' });
     } else {
