@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-err');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -42,21 +44,21 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUsersByCredentials = async function (email, password) {
+userSchema.statics.findUsersByCredentials = async function (email, password, next) {
   try {
     const user = await this.findOne({email});
     if(!user) {
-      return new Error('Неправильные почта или пароль');
+      throw new NotFoundError('Неправильные почта или пароль');
     }
 
     const matched = await bcrypt.compare(password, user.password);
     if(!matched) {
-      return new Error('Неправильные почта или пароль');
+      throw new ConflictError('Неправильные почта или пароль');
     }
     return user
   }
   catch (err) {
-    return {message: err.message};
+    next(err)
   }
 };
 
