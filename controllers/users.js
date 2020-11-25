@@ -1,5 +1,10 @@
 const User = require('../models/user');
 const validatorErr = require('../utils/validatorErrForUpdUsers');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const soldRound = 10;
+const SECRET_KEY = 'some-secret-key';
+const EXPIRES = { expiresIn: '7d' };
 
 const getUsers = async (req, res) => {
   try {
@@ -32,18 +37,24 @@ const getUser = async (req, res) => {
   return null;
 };
 
-const createProfile = async (req, res) => {
+const createUser = async (req, res) => {
   try {
-    const { name, about, avatar } = req.body;
+    const { email, password } = req.body;
     const id = await User.countDocuments();
+    const hash = await bcrypt.hash(password, soldRound);
     const savedUser = await User.create({
-      id, name, about, avatar,
+      id,
+      email,
+      password: hash,
     });
     res.status(200).send(savedUser);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Произошла ошибка' });
-    } else {
+    if (err.name === 'MongoError') {
+      return res.status(400).send({ message: 'Email должен быть уникальным' });
+    }else if(err.name === 'ValidationError') {
+      res.status(400).send({ message: 'Невалидные данные' });
+    }
+    else {
       res.status(500).send({ message: 'Что-то пошло не так' });
     }
   }
@@ -80,7 +91,7 @@ const updateAvatarProfile = async (req, res) => {
 module.exports = {
   getUsers,
   getUser,
-  createProfile,
+  createUser,
   updateProfile,
   updateAvatarProfile,
 };

@@ -9,7 +9,6 @@ routers.use((req, res, next) => {
   req.user = {
     _id: '5fac143b0587393e561e787d',
   };
-
   next();
 });
 
