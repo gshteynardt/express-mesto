@@ -2,6 +2,7 @@ const User = require('../models/user');
 const validatorErr = require('../utils/validatorErrForUpdUsers');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const NotFoundError = require("../errors/not-found-err");
 const soldRound = 10;
 const SECRET_KEY = 'some-secret-key';
 const EXPIRES = { expiresIn: '7d' };
@@ -61,11 +62,27 @@ const createUser = async (req, res) => {
   return null;
 };
 
+const loginUser = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findUsersByCredentials(email, password);
+    console.log(user.message)
+    if(user.message) {
+      throw new NotFoundError('Неправильные почта или пароль');
+    } else {
+      const payload = {_id: user._id};
+      const token = await jwt.sign(payload, SECRET_KEY, EXPIRES);
+      res.send({ token });
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
 const updateProfile = async (req, res) => {
   try {
     const { name, about, avatar } = req.body;
     const id = req.user._id;
-
     const opts = { runValidators: true, new: true };
     const data = await User.findByIdAndUpdate(id, { name, about, avatar }, opts).orFail(new Error('NotFound'));
     res.status(200).send(data);
@@ -92,6 +109,7 @@ module.exports = {
   getUsers,
   getUser,
   createUser,
+  loginUser,
   updateProfile,
   updateAvatarProfile,
 };

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const isEmail = require('validator/lib/isEmail');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
@@ -44,7 +45,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUsersByCredentials = async function (email, password, next) {
+userSchema.statics.findUsersByCredentials = async function (email, password) {
   try {
     const user = await this.findOne({email});
     if(!user) {
@@ -58,7 +59,7 @@ userSchema.statics.findUsersByCredentials = async function (email, password, nex
     return user
   }
   catch (err) {
-    next(err)
+    return err
   }
 };
 
