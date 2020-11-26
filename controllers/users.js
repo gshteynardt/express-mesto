@@ -21,10 +21,11 @@ const getUsers = async (req, res) => {
   return null;
 };
 
-const getUser = async (req, res) => {
-  const { id } = req.params;
+const getUser = async (req, res, next) => {
+  console.log(req.user)
+  const { _id } = req.user;
   try {
-    const queryUser = await User.findById(id).orFail(new Error('NotFound'));
+    const queryUser = await User.findById(_id).orFail(new Error('NotFound'));
     res.status(200).send(queryUser);
   } catch (err) {
     if (err.name === 'CastError') {
@@ -34,6 +35,7 @@ const getUser = async (req, res) => {
     } else {
       res.status(500).send({ message: 'Ошибка сервера' });
     }
+    next(err);
   }
   return null;
 };

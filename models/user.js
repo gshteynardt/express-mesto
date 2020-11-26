@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6,
+    select: false,
   },
   name: {
     type: String,
@@ -47,7 +48,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findUsersByCredentials = async function (email, password) {
   try {
-    const user = await this.findOne({email});
+    const user = await this.findOne({email}).select('+password');
     if(!user) {
       throw new NotFoundError('Неправильные почта или пароль');
     }
