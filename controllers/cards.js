@@ -1,4 +1,6 @@
 const Card = require('../models/card');
+const NotFoundError = require("../errors/not-found-err");
+const ForbiddenError = require("../errors/forbidden-err");
 
 const getCards = async (req, res) => {
   try {
@@ -47,20 +49,27 @@ const createCard = async (req, res) => {
   return null;
 };
 
-const deleteCard = async (req, res) => {
+const deleteCard = async (req, res, next) => {
   try {
+    const user = req.user._id;
     const { id } = req.params;
-    const deletedCard = await Card.findByIdAndDelete(id).orFail(new Error('NotFound'));
-
-    res.send({ data: deletedCard });
+    const query_card = await Card.findById(id).orFail(new Error('NotFound'));
+    console.log(query_card)
+    if(!query_card) {
+      return
+    } else if (!(user === query_card.owner)){
+      throw new ForbiddenError('Запрещено удалять карточки других пользователей');
+    } else {
+      const deletedCard = await Card.findByIdAndDelete(id).orFail(new Error('NotFound'));
+      res.send({ data: deletedCard });
+    }
   } catch (err) {
     if (err.name === 'CastError') {
       return res.status(400).send({ message: 'Переданы некорректные данные' });
     } if (err.message === 'NotFound') {
-      res.status(404).send({ message: 'Объект не найден' });
-    } else {
-      res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(404).send({ message: 'Объект не найден' });
     }
+    next(err);
   }
   return null;
 };

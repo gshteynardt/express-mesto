@@ -84,9 +84,9 @@ const loginUser = async (req, res, next) => {
 const updateProfile = async (req, res) => {
   try {
     const { name, about, avatar } = req.body;
-    const id = req.user._id;
+    const _id = req.user;
     const opts = { runValidators: true, new: true };
-    const data = await User.findByIdAndUpdate(id, { name, about, avatar }, opts).orFail(new Error('NotFound'));
+    const data = await User.findByIdAndUpdate(_id, { name, about, avatar }, opts).orFail(new Error('NotFound'));
     res.status(200).send(data);
   } catch (err) {
     validatorErr(err, res);
@@ -97,9 +97,9 @@ const updateProfile = async (req, res) => {
 const updateAvatarProfile = async (req, res) => {
   try {
     const { avatar } = req.body;
-    const id = req.user._id;
+    const _id = req.user;
     const opts = { runValidators: true, new: true };
-    const data = await User.findByIdAndUpdate(id, { avatar }, opts).orFail(new Error('NotFound'));
+    const data = await User.findByIdAndUpdate(_id, { avatar }, opts).orFail(new Error('NotFound'));
     res.status(200).send(data);
   } catch (err) {
     validatorErr(err, res);
