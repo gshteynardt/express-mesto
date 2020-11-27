@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const routers = require('./routes/index.js');
 const bodyParser = require('body-parser');
 const app = express();
+const cors = require('cors');
 const { PORT = 3000 } = process.env;
 
+app.use(cors());
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,

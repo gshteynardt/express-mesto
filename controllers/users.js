@@ -1,46 +1,40 @@
 const User = require('../models/user');
-const validatorErr = require('../utils/validatorErrForUpdUsers');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const NotFoundError = require("../errors/not-found-err");
+const ConflictError = require("../errors/conflict-err");
+const BadRequestErr = require("../errors/bad-request-err");
 const soldRound = 10;
 const SECRET_KEY = 'some-secret-key';
 const EXPIRES = { expiresIn: '7d' };
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const data = await User.find({});
     return res.send(data);
   } catch (err) {
-    if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Ошибка на сервере' });
-    } else {
-      res.status(500).send({ message: 'Что-то пошло не так' });
-    }
-  }
-  return null;
-};
-
-const getUser = async (req, res, next) => {
-  console.log(req.user)
-  const { _id } = req.user;
-  try {
-    const queryUser = await User.findById(_id).orFail(new Error('NotFound'));
-    res.status(200).send(queryUser);
-  } catch (err) {
-    if (err.name === 'CastError') {
-      return res.status(400).send({ message: 'Переданы некорректные данные' });
-    } if (err.message === 'NotFound') {
-      res.status(404).send({ message: 'Объект не найден' });
-    } else {
-      res.status(500).send({ message: 'Ошибка сервера' });
-    }
     next(err);
   }
   return null;
 };
 
-const createUser = async (req, res) => {
+const getUser = async (req, res, next) => {
+  const { _id } = req.user;
+  try {
+    const queryUser = await User.findById(_id).select('+password');
+
+    if(!queryUser) {
+      throw new NotFoundError('Пользователя не существует')
+    } else {
+      res.status(200).send(queryUser);
+    }
+  } catch (err) {
+    next(err);
+  }
+  return null;
+};
+
+const createUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const id = await User.countDocuments();
@@ -52,14 +46,7 @@ const createUser = async (req, res) => {
     });
     res.status(200).send(savedUser);
   } catch (err) {
-    if (err.name === 'MongoError') {
-      return res.status(400).send({ message: 'Email должен быть уникальным' });
-    }else if(err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Невалидные данные' });
-    }
-    else {
-      res.status(500).send({ message: 'Что-то пошло не так' });
-    }
+    next(err);
   }
   return null;
 };
@@ -68,9 +55,8 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUsersByCredentials(email, password);
-    console.log(user.message)
     if(user.message) {
-      throw new NotFoundError('Неправильные почта или пароль');
+      throw new ConflictError('Неправильные почта или пароль');
     } else {
       const payload = {_id: user._id};
       const token = await jwt.sign(payload, SECRET_KEY, EXPIRES);
@@ -81,28 +67,36 @@ const loginUser = async (req, res, next) => {
   }
 }
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   try {
-    const { name, about, avatar } = req.body;
+    const { name, about } = req.body;
     const _id = req.user;
     const opts = { runValidators: true, new: true };
-    const data = await User.findByIdAndUpdate(_id, { name, about, avatar }, opts).orFail(new Error('NotFound'));
-    res.status(200).send(data);
+    const data = await User.findByIdAndUpdate(_id, { name, about }, opts);
+    if(!data) {
+      throw new BadRequestErr('Невалидные данные');
+    } else {
+      res.status(200).send(data);
+    }
   } catch (err) {
-    validatorErr(err, res);
+    next(err);
   }
   return null;
 };
 
-const updateAvatarProfile = async (req, res) => {
+const updateAvatarProfile = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const _id = req.user;
     const opts = { runValidators: true, new: true };
     const data = await User.findByIdAndUpdate(_id, { avatar }, opts).orFail(new Error('NotFound'));
-    res.status(200).send(data);
+    if(!data) {
+      throw new BadRequestErr('Невалидные данные');
+    } else {
+      res.status(200).send(data);
+    }
   } catch (err) {
-    validatorErr(err, res);
+    next(err);
   }
   return null;
 };
