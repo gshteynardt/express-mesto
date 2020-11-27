@@ -35,7 +35,6 @@ const getUser = async (req, res, next) => {
 };
 
 const createUser = async (req, res, next) => {
-
   try {
     const { email, password } = req.body;
     const id = await User.countDocuments();

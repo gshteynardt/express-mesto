@@ -13,6 +13,7 @@
   "author": "German Shteyn",
   "license": "ISC",
   "devDependencies": {
+    "celebrate": "^13.0.4",
     "cors": "^2.8.5",
     "eslint": "^7.13.0",
     "eslint-config-airbnb-base": "^14.2.1",

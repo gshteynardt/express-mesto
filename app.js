@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
+const { errors } = require('celebrate');
 const { PORT = 3000 } = process.env;
 const routers = require('./routes/index.js');
 
 app.use(cors());
+
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -18,9 +20,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/', routers);
 
+app.use(errors());
+
 app.use((err, req, res, next) => {
   let { statusCode = 500, message } = err;
-
   if (err.errors) {
     statusCode = 409;
     message = err.message;
