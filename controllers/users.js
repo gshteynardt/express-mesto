@@ -35,16 +35,19 @@ const getUser = async (req, res, next) => {
 };
 
 const createUser = async (req, res, next) => {
+
   try {
     const { email, password } = req.body;
     const id = await User.countDocuments();
     const hash = await bcrypt.hash(password, soldRound);
-    const savedUser = await User.create({
+
+    const savedUser =  await User.create({
       id,
       email,
       password: hash,
     });
-    res.status(200).send(savedUser);
+
+    res.status(200).send({data: savedUser});
   } catch (err) {
     next(err);
   }

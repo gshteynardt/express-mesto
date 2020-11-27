@@ -30,8 +30,8 @@ const getCard = async (req, res, next) => {
 const createCard = async (req, res, next) => {
   try {
     const { name, link } = req.body;
-    const ownerId = req.user._id;
-    const savedCard = await Card.create({ name, link, owner: ownerId });
+    const owner = req.user._id;
+    const savedCard = await Card.create({ name, link, owner: owner });
     res.status(200).send(savedCard);
   } catch (err) {
     next(err);
@@ -89,7 +89,6 @@ const dislikeCard = async (req, res, next) => {
       { $pull: { likes: req.user._id } },
       { new: true },
     );
-
     if(!card) {
       throw new NotFoundError('Карточка с таким id не нвйдена');
     } else {
