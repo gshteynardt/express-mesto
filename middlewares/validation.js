@@ -16,7 +16,7 @@ const idUserValidation = celebrate({
 
 const idCardValidation = celebrate({
   params: Joi.object().keys({
-    CardId: Joi.string().alphanum().hex(),
+    cardId: Joi.string().alphanum().hex(),
   })
 });
 
