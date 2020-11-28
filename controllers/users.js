@@ -5,8 +5,7 @@ const NotFoundError = require("../errors/not-found-err");
 const ConflictError = require("../errors/conflict-err");
 const BadRequestErr = require("../errors/bad-request-err");
 const soldRound = 10;
-const SECRET_KEY = 'some-secret-key';
-const EXPIRES = { expiresIn: '7d' };
+const { JWT_SECRET, EXPIRES } = process.env;
 
 const getUsers = async (req, res, next) => {
   try {
@@ -61,7 +60,7 @@ const loginUser = async (req, res, next) => {
       throw new ConflictError('Неправильные почта или пароль');
     } else {
       const payload = {_id: user._id};
-      const token = await jwt.sign(payload, SECRET_KEY, EXPIRES);
+      const token = await jwt.sign(payload, JWT_SECRET, {expiresIn: EXPIRES });
       res.send({ token });
     }
   } catch (err) {

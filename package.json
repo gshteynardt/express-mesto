@@ -15,12 +15,15 @@
   "devDependencies": {
     "celebrate": "^13.0.4",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "eslint": "^7.13.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-react": "^7.21.4",
+    "express-winston": "^4.0.5",
     "jsonwebtoken": "^8.5.1",
-    "nodemon": "^2.0.5"
+    "nodemon": "^2.0.5",
+    "winston": "^3.3.3"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
