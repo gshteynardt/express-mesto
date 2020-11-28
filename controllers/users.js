@@ -1,11 +1,11 @@
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const NotFoundError = require("../errors/not-found-err");
-const ConflictError = require("../errors/conflict-err");
-const BadRequestErr = require("../errors/bad-request-err");
+const User = require('../models/user');
+const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-err');
+const BadRequestErr = require('../errors/bad-request-err');
+const { generateToken } = require('../utils/genereteToken');
+
 const soldRound = 10;
-const { JWT_SECRET, EXPIRES } = process.env;
 
 const getUsers = async (req, res, next) => {
   try {
@@ -21,9 +21,8 @@ const getUser = async (req, res, next) => {
   const { _id } = req.user;
   try {
     const queryUser = await User.findById(_id).select('+password');
-
-    if(!queryUser) {
-      throw new NotFoundError('Пользователя не существует')
+    if (!queryUser) {
+      throw new NotFoundError('Пользователя не существует');
     } else {
       res.status(200).send(queryUser);
     }
@@ -39,13 +38,13 @@ const createUser = async (req, res, next) => {
     const id = await User.countDocuments();
     const hash = await bcrypt.hash(password, soldRound);
 
-    const savedUser =  await User.create({
+    const savedUser = await User.create({
       id,
       email,
       password: hash,
     });
 
-    res.status(200).send({data: savedUser});
+    res.status(200).send({ data: savedUser });
   } catch (err) {
     next(err);
   }
@@ -56,17 +55,17 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUsersByCredentials(email, password);
-    if(user.message) {
+    if (user.message) {
       throw new ConflictError('Неправильные почта или пароль');
     } else {
-      const payload = {_id: user._id};
-      const token = await jwt.sign(payload, JWT_SECRET, {expiresIn: EXPIRES });
+      const payload = { _id: user._id };
+      const token = await generateToken(payload);
       res.send({ token });
     }
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const updateProfile = async (req, res, next) => {
   try {
@@ -74,7 +73,7 @@ const updateProfile = async (req, res, next) => {
     const _id = req.user;
     const opts = { runValidators: true, new: true };
     const data = await User.findByIdAndUpdate(_id, { name, about }, opts);
-    if(!data) {
+    if (!data) {
       throw new BadRequestErr('Невалидные данные');
     } else {
       res.status(200).send(data);
@@ -91,7 +90,7 @@ const updateAvatarProfile = async (req, res, next) => {
     const _id = req.user;
     const opts = { runValidators: true, new: true };
     const data = await User.findByIdAndUpdate(_id, { avatar }, opts).orFail(new Error('NotFound'));
-    if(!data) {
+    if (!data) {
       throw new BadRequestErr('Невалидные данные');
     } else {
       res.status(200).send(data);

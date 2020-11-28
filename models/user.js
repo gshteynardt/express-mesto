@@ -48,19 +48,18 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findUsersByCredentials = async function (email, password) {
   try {
-    const user = await this.findOne({email}).select('+password');
-    if(!user) {
+    const user = await this.findOne({ email }).select('+password');
+    if (!user) {
       throw new NotFoundError('Неправильные почта или пароль');
     }
 
     const matched = await bcrypt.compare(password, user.password);
-    if(!matched) {
+    if (!matched) {
       throw new ConflictError('Неправильные почта или пароль');
     }
-    return user
-  }
-  catch (err) {
-    return err
+    return user;
+  } catch (err) {
+    return err;
   }
 };
 

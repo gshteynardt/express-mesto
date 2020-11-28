@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+
 const app = express();
 const cors = require('cors');
 const { errors } = require('celebrate');
+
 const { PORT = 3000 } = process.env;
 const routers = require('./routes/index.js');
 require('dotenv').config();
@@ -34,9 +36,11 @@ app.use((err, req, res, next) => {
 
   res
     .status(statusCode)
-    .send({ message: statusCode === 500
+    .send({
+      message: statusCode === 500
         ? 'На сервере произошла ошибка'
-        : message });
+        : message,
+    });
 
   next();
 });
