@@ -9,6 +9,12 @@ const {
   createUser,
 } = require('../controllers/users');
 
+routers.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 routers.post('/signup', createUser);
 routers.post('/signin', loginUser);
 routers.use(auth);
