@@ -31,6 +31,6 @@
     "express": "^4.17.1",
     "mongoose": "^5.10.13",
     "mongoose-beautiful-unique-validation": "^7.1.1",
-    "validator": "^13.1.17"
+    "validator": "^13.7.0"
   }
 }
